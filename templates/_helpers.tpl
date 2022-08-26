@@ -70,6 +70,8 @@ We truncate at 63 chars because some Kubernetes name fields are limited to this 
   value: {{ required ".Values.s3.region is required" .Values.s3.region }}
 - name: REGISTRY_STORAGE_S3_BUCKET
   value: {{ required ".Values.s3.bucket is required" .Values.s3.bucket }}
+
+{{- if .Values.secrets.s3 }}
 {{- if or (and .Values.secrets.s3.secretKey .Values.secrets.s3.accessKey) .Values.secrets.s3.secretRef }}
 - name: REGISTRY_STORAGE_S3_ACCESSKEY
   valueFrom:
@@ -81,6 +83,7 @@ We truncate at 63 chars because some Kubernetes name fields are limited to this 
     secretKeyRef:
       name: {{ if .Values.secrets.s3.secretRef }}{{ .Values.secrets.s3.secretRef }}{{ else }}{{ template "docker-registry.fullname" . }}-secret{{ end }}
       key: s3SecretKey
+{{- end -}}
 {{- end -}}
 
 {{- if .Values.s3.regionEndpoint }}
